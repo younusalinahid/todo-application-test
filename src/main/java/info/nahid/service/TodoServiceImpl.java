@@ -6,11 +6,16 @@ import info.nahid.repository.TodoRepository;
 import info.nahid.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -33,11 +38,19 @@ public class TodoServiceImpl implements TodoService{
 
     @Override
     public Page<Todo> getAll(int pageNo, int pageSize) {
-        return null;
+        Pageable todoPageable = PageRequest.of(pageNo, pageSize);
+        return todoRepository.findAll(todoPageable);
     }
 
     @Override
-    public void getById(UUID id) {
+    public Todo getById(UUID id) {
+        Optional<Todo> todo = todoRepository.findById(id);
+        if (todo.isPresent()) {
+            return todo.get();
+        } else {
+            logger.warn(Constants.TODO_NOT_FOUND + id);
+            throw new EntityNotFoundException(Constants.TODO_NOT_FOUND + id);
+        }
     }
 
     @Override
@@ -47,6 +60,13 @@ public class TodoServiceImpl implements TodoService{
 
     @Override
     public Todo update(Todo todo) throws ConstraintsViolationException {
-        return null;
+        Todo existingTodo = getById(todo.getId());
+        BeanUtils.copyProperties(todo, existingTodo, "id");
+        try {
+            return todoRepository.save(existingTodo);
+        } catch (DataIntegrityViolationException exception) {
+            logger.warn(Constants.DATA_VIOLATION + exception.getMessage());
+            throw new ConstraintsViolationException(Constants.ALREADY_EXISTS);
+        }
     }
 }

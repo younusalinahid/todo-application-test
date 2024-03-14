@@ -6,6 +6,7 @@ import info.nahid.repository.TaskRepository;
 import info.nahid.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -24,13 +25,14 @@ public class TaskServiceImpl implements TaskService {
     
     @Override
     public Task create(Task task) throws ConstraintsViolationException {
-        try {
-            todoService.getById(task.getTodo().getId());
-            return taskRepository.save(task);
-        } catch (DataIntegrityViolationException exception) {
-            logger.warn(Constants.DATA_VIOLATION + exception.getMessage());
-            throw new ConstraintsViolationException(Constants.ALREADY_EXISTS);
-        }
+//        try {
+//            todoService.getById(task.getTodo().getId());
+//            return taskRepository.save(task);
+//        } catch (DataIntegrityViolationException exception) {
+//            logger.warn(Constants.DATA_VIOLATION + exception.getMessage());
+//            throw new ConstraintsViolationException(Constants.ALREADY_EXISTS);
+//        }
+        return null;
     }
 
     @Override
@@ -45,6 +47,15 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Task update(Task task) throws ConstraintsViolationException {
-        return null;
+
+        Task existingTask = getById(task.getId());
+        todoService.getById(task.getTodo().getId());
+        BeanUtils.copyProperties(task, existingTask, "id");
+        try {
+            return taskRepository.save(existingTask);
+        } catch (DataIntegrityViolationException exception) {
+            logger.warn(Constants.DATA_VIOLATION + exception.getMessage());
+            throw new ConstraintsViolationException(Constants.ALREADY_EXISTS);
+        }
     }
 }

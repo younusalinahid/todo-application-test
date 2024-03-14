@@ -10,7 +10,7 @@ public interface TodoService {
 
     Page<Todo> getAll(int pageNo, int pageSize);
 
-    void getById(UUID id);
+    Todo getById(UUID id);
 
     void deleteById(UUID id);
 
