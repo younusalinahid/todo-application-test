@@ -5,6 +5,8 @@ public class Constants {
 
     public static final String TODO_CREATED = "Todo created successfully";
     public static final String TODO_UPDATED = "Todo updated successfully";
+    public static final String TODO_FOUND = "Todo found successfully";
+    public static final String TODO_DELETED = "Todo deleted successfully";
 
     public static final String TODO_NOT_FOUND = "Todo not found for id:";
     public static final String NOT_EMPTY_NAME = "Name can not be null";

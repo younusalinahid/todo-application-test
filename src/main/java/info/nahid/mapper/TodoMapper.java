@@ -38,9 +38,15 @@ public class TodoMapper {
         );
     }
 
-    public static TodoWithoutTaskDTO convertTodoWithoutTaskDto(Todo todo) {
+    public static TodoWithoutTaskDTO convertTodoWithoutTasksDto(Todo todo) {
         return new TodoWithoutTaskDTO(
                 todo.getId(),todo.getName(),todo.getDescription());
+    }
+
+    public static List<TodoWithoutTaskDTO> convertTodoWithoutTasksDto(List<Todo> todoList) {
+        return todoList.stream()
+                .map(TodoMapper::convertTodoWithoutTasksDto)
+                .collect(Collectors.toList());
     }
 
     private static TaskDTO convertTaskToTaskDTO(Task task) {
