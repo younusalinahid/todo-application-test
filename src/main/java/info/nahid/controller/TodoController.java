@@ -96,4 +96,20 @@ public class TodoController {
                 new ObjectResponse(true, Constants.TASK_UPDATED, taskService.update(task))
         );
     }
+
+    @GetMapping("/{todoId}/tasks/{taskId}")
+    public ResponseEntity<ObjectResponse> getTaskById(@PathVariable("todoId") @ValidUuid UUID todoId,
+                                                      @PathVariable("taskId") @ValidUuid UUID taskId) {
+        todoService.getById(todoId);
+        Task task = taskService.getById(taskId);
+        return ResponseEntity.ok(new ObjectResponse(true, Constants.TASK_FOUND,task));
+    }
+
+    @DeleteMapping("/{todoId}/tasks/{taskId}")
+    public ResponseEntity<ApiResponse> deleteById(@PathVariable("todoId") @ValidUuid UUID todoId,
+                                                  @PathVariable("taskId") @ValidUuid UUID taskId) {
+        todoService.getById(todoId);
+        taskService.deleteById(taskId);
+        return ResponseEntity.ok(new ApiResponse(true, Constants.TASK_DELETED));
+    }
 }

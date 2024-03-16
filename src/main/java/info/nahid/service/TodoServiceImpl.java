@@ -53,15 +53,6 @@ public class TodoServiceImpl implements TodoService{
         }
     }
 
-    @Override
-    public void deleteById(UUID id) {
-        try {
-            todoRepository.deleteById(id);
-        } catch (EmptyResultDataAccessException exception) {
-            logger.warn(Constants.TODO_NOT_FOUND + id);
-            throw new EntityNotFoundException(Constants.TODO_NOT_FOUND + id);
-        }
-    }
 
     @Override
     public Todo update(Todo todo) throws ConstraintsViolationException {
@@ -72,6 +63,16 @@ public class TodoServiceImpl implements TodoService{
         } catch (DataIntegrityViolationException exception) {
             logger.warn(Constants.DATA_VIOLATION + exception.getMessage());
             throw new ConstraintsViolationException(Constants.ALREADY_EXISTS);
+        }
+    }
+
+    @Override
+    public void deleteById(UUID id) {
+        try {
+            todoRepository.deleteById(id);
+        } catch (EmptyResultDataAccessException exception) {
+            logger.warn(Constants.TODO_NOT_FOUND + id);
+            throw new EntityNotFoundException(Constants.TODO_NOT_FOUND + id);
         }
     }
 }

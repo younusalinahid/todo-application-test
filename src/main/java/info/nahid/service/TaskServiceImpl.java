@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -64,7 +65,12 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public void deleteById(UUID id) {
-
+        try {
+            taskRepository.deleteById(id);
+        }catch (EmptyResultDataAccessException exception) {
+            logger.warn(Constants.TASK_NOT_FOUND + id);
+            throw new EntityNotFoundException(Constants.TASK_NOT_FOUND + id);
+        }
     }
 
 }
