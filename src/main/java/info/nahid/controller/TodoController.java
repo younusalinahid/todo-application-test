@@ -1,8 +1,11 @@
 package info.nahid.controller;
 
+import info.nahid.entity.Task;
 import info.nahid.entity.Todo;
 import info.nahid.exception.ConstraintsViolationException;
+import info.nahid.mapper.TaskMapper;
 import info.nahid.mapper.TodoMapper;
+import info.nahid.request.TaskRequest;
 import info.nahid.request.TodoRequest;
 import info.nahid.response.ApiResponse;
 import info.nahid.response.ObjectResponse;
@@ -72,5 +75,25 @@ public class TodoController {
     public ResponseEntity<ApiResponse> deleteById(@PathVariable("id") @ValidUuid UUID id) {
         todoService.deleteById(id);
         return ResponseEntity.ok(new ApiResponse(true, Constants.TODO_DELETED));
+    }
+
+    @PostMapping("/{todoId}/tasks")
+    public ResponseEntity<ObjectResponse> createTask(@PathVariable("todoId") @ValidUuid UUID todoId,
+                                                     @Valid @RequestBody TaskRequest taskRequest)
+        throws ConstraintsViolationException {
+        Task task = TaskMapper.convertTaskRequestWithoutId(todoId, taskRequest);
+        return new ResponseEntity<>(
+                new ObjectResponse(true, Constants.TASK_CREATED, taskService.create(task)), HttpStatus.CREATED
+        );
+    }
+
+    @PutMapping("/{todoId}/tasks/{taskId}")
+    public ResponseEntity<ObjectResponse> updateTask(@PathVariable("todoId") @ValidUuid UUID todoId,
+                                                     @PathVariable("taskId") @ValidUuid UUID taskId,
+                                                     @Valid @RequestBody TaskRequest taskRequest) throws ConstraintsViolationException {
+        Task task = TaskMapper.convertTaskRequestWithId(todoId, taskId,taskRequest);
+        return ResponseEntity.ok(
+                new ObjectResponse(true, Constants.TASK_UPDATED, taskService.update(task))
+        );
     }
 }

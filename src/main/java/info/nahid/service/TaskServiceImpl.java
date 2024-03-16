@@ -10,6 +10,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+
+import javax.persistence.EntityNotFoundException;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -25,24 +28,24 @@ public class TaskServiceImpl implements TaskService {
     
     @Override
     public Task create(Task task) throws ConstraintsViolationException {
-//        try {
-//            todoService.getById(task.getTodo().getId());
-//            return taskRepository.save(task);
-//        } catch (DataIntegrityViolationException exception) {
-//            logger.warn(Constants.DATA_VIOLATION + exception.getMessage());
-//            throw new ConstraintsViolationException(Constants.ALREADY_EXISTS);
-//        }
-        return null;
+        try {
+            todoService.getById(task.getTodo().getId());
+            return taskRepository.save(task);
+        } catch (DataIntegrityViolationException exception) {
+            logger.warn(Constants.DATA_VIOLATION + exception.getMessage());
+            throw new ConstraintsViolationException(Constants.ALREADY_EXISTS);
+        }
     }
 
     @Override
     public Task getById(UUID id) {
-        return null;
-    }
-
-    @Override
-    public void deleteById(UUID id) {
-
+        Optional<Task> task = taskRepository.findById(id);
+        if(task.isPresent()) {
+            return task.get();
+        } else {
+            logger.warn(Constants.TASK_NOT_FOUND + id);
+            throw new EntityNotFoundException(Constants.TASK_NOT_FOUND + id);
+        }
     }
 
     @Override
@@ -58,4 +61,10 @@ public class TaskServiceImpl implements TaskService {
             throw new ConstraintsViolationException(Constants.ALREADY_EXISTS);
         }
     }
+
+    @Override
+    public void deleteById(UUID id) {
+
+    }
+
 }
