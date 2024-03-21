@@ -59,8 +59,8 @@ public class TestData {
     public static Todo createUpdatedTodo() {
         return new Todo(
                 todoId,
-                todoName + "update",
-                todoDescription + "updated"
+                todoName + " update",
+                todoDescription + " updated"
         );
     }
 
@@ -69,8 +69,8 @@ public class TestData {
         todo.setId(TestData.todoId);
         return new Task(
                 taskId,
-                taskName + "update",
-                taskDescription + "update",
+                taskName + " update",
+                taskDescription + " update",
                 todo
         );
     }
